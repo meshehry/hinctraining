@@ -1,0 +1,1764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FHC Intake Training — HINC Interactive Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple: #5B2D8E;
+    --purple-light: #7B4DB8;
+    --purple-pale: #F3EEFF;
+    --teal: #006D77;
+    --teal-light: #009DAB;
+    --teal-pale: #E8F8F9;
+    --red: #C0392B;
+    --red-pale: #FDECEA;
+    --yellow: #D97706;
+    --yellow-pale: #FFFBEB;
+    --green: #166534;
+    --green-pale: #F0FDF4;
+    --ink: #1A1A2E;
+    --ink-muted: #4A4A6A;
+    --border: #E2E2EE;
+    --bg: #F8F7FF;
+    --white: #FFFFFF;
+    --sidebar-w: 280px;
+    --radius: 12px;
+    --shadow: 0 2px 12px rgba(91,45,142,0.10);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    display: flex;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    width: var(--sidebar-w);
+    background: var(--ink);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 100;
+    overflow-y: auto;
+    transition: transform 0.3s;
+  }
+
+  .sidebar-logo {
+    padding: 24px 20px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.10);
+  }
+  .sidebar-logo .badge {
+    display: inline-block;
+    background: var(--purple);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+  }
+  .sidebar-logo h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    line-height: 1.3;
+    color: #fff;
+  }
+  .sidebar-logo p {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    margin-top: 4px;
+  }
+
+  .sidebar-progress {
+    padding: 12px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .progress-bar {
+    height: 4px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 6px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--purple-light), var(--teal-light));
+    border-radius: 2px;
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+  .progress-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  nav ul { list-style: none; padding: 12px 0; }
+  nav ul li a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    color: rgba(255,255,255,0.65);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 400;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+  }
+  nav ul li a:hover { color: #fff; background: rgba(255,255,255,0.06); }
+  nav ul li a.active {
+    color: #fff;
+    background: rgba(91,45,142,0.35);
+    border-left-color: var(--purple-light);
+    font-weight: 600;
+  }
+  nav ul li a .icon { font-size: 16px; flex-shrink: 0; }
+  nav ul li a .check { margin-left: auto; font-size: 12px; opacity: 0; transition: opacity 0.3s; }
+  nav ul li a.done .check { opacity: 1; color: #4ade80; }
+
+  .nav-section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    padding: 16px 20px 4px;
+  }
+
+  /* ── MAIN ── */
+  #main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  #topbar {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+  }
+  #topbar h2 { font-size: 15px; font-weight: 600; color: var(--ink); }
+  #topbar .breadcrumb { font-size: 12px; color: var(--ink-muted); }
+
+  .module-content {
+    display: none;
+    padding: 36px 40px 60px;
+    max-width: 900px;
+    animation: fadeIn 0.3s ease;
+  }
+  .module-content.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── TYPOGRAPHY ── */
+  .module-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    color: var(--ink);
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .module-subtitle {
+    font-size: 15px;
+    color: var(--ink-muted);
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 2px solid var(--border);
+  }
+  h3 { font-size: 18px; font-weight: 600; margin: 28px 0 12px; color: var(--ink); }
+  h4 { font-size: 14px; font-weight: 600; margin: 16px 0 8px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  p { font-size: 15px; line-height: 1.7; color: var(--ink-muted); margin-bottom: 12px; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: var(--purple);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+  }
+  .stat-card .num { font-family: 'DM Serif Display', serif; font-size: 40px; line-height: 1; }
+  .stat-card .label { font-size: 12px; opacity: 0.8; margin-top: 4px; }
+
+  /* ── TRIAGE CARDS ── */
+  .triage-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin: 20px 0; }
+  .triage-card { border-radius: var(--radius); padding: 20px; }
+  .triage-card.red { background: var(--red-pale); border: 2px solid var(--red); }
+  .triage-card.yellow { background: var(--yellow-pale); border: 2px solid var(--yellow); }
+  .triage-card.green { background: var(--green-pale); border: 2px solid var(--green); }
+  .triage-card .badge-color {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+  }
+  .triage-card.red .badge-color { background: var(--red); color: #fff; }
+  .triage-card.yellow .badge-color { background: var(--yellow); color: #fff; }
+  .triage-card.green .badge-color { background: var(--green); color: #fff; }
+  .triage-card h4 { font-size: 15px; font-weight: 700; margin: 0 0 8px; color: var(--ink); text-transform: none; letter-spacing: 0; }
+  .triage-card p { font-size: 13px; margin: 0 0 10px; }
+  .triage-card .action { font-size: 13px; font-weight: 600; }
+  .triage-card.red .action { color: var(--red); }
+  .triage-card.yellow .action { color: var(--yellow); }
+  .triage-card.green .action { color: var(--green); }
+
+  /* ── PIPELINE ── */
+  .pipeline {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin: 20px 0;
+    overflow-x: auto;
+  }
+  .stage {
+    flex: 1;
+    min-width: 160px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 0;
+    padding: 16px;
+    position: relative;
+  }
+  .stage:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+  .stage:last-child { border-radius: 0 var(--radius) var(--radius) 0; }
+  .stage + .stage { border-left: none; }
+  .stage-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+  .stage:nth-child(1) .stage-num { background: #E0E0E0; color: #555; }
+  .stage:nth-child(2) .stage-num { background: #FEF3C7; color: var(--yellow); }
+  .stage:nth-child(3) .stage-num { background: #DBEAFE; color: #1D4ED8; }
+  .stage:nth-child(4) .stage-num { background: #D1FAE5; color: var(--green); }
+  .stage-label { font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 4px; }
+  .stage-title { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+  .stage-who { font-size: 11px; color: var(--purple); font-weight: 600; margin-bottom: 6px; }
+  .stage-desc { font-size: 12px; color: var(--ink-muted); line-height: 1.4; }
+  .stage-arrow {
+    position: absolute;
+    right: -14px; top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    font-size: 18px;
+    color: var(--purple-light);
+  }
+
+  /* ── STATUS TABLE ── */
+  .status-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 16px 0; }
+  .status-table th {
+    text-align: left;
+    padding: 10px 12px;
+    background: var(--ink);
+    color: #fff;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .status-table th:first-child { border-radius: 8px 0 0 0; }
+  .status-table th:last-child { border-radius: 0 8px 0 0; }
+  .status-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .status-table tr:hover td { background: var(--purple-pale); }
+  .cat-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .cat-1 { background: #E0E7FF; color: #3730A3; }
+  .cat-2 { background: #FEF3C7; color: #92400E; }
+  .cat-3 { background: #FCE7F3; color: #9D174D; }
+  .cat-4 { background: #D1FAE5; color: #065F46; }
+
+  /* ── CALLOUTS ── */
+  .callout {
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 16px 0;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .callout.info { background: var(--teal-pale); border-left: 4px solid var(--teal); }
+  .callout.warn { background: var(--yellow-pale); border-left: 4px solid var(--yellow); }
+  .callout.tip { background: var(--purple-pale); border-left: 4px solid var(--purple); }
+  .callout.rule { background: #FFF0F0; border-left: 4px solid var(--red); }
+  .callout-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+  .callout-body p { font-size: 13.5px; margin: 0; color: var(--ink); }
+  .callout-body strong { display: block; font-weight: 700; margin-bottom: 4px; font-size: 13px; }
+
+  /* ── INTERACTIVE TRIAGE TOOL ── */
+  .tool-container {
+    background: var(--white);
+    border: 2px solid var(--purple);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin: 20px 0;
+  }
+  .tool-header {
+    background: var(--purple);
+    color: #fff;
+    padding: 14px 20px;
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tool-body { padding: 24px; }
+  .question-label { font-weight: 600; font-size: 14px; margin-bottom: 12px; color: var(--ink); }
+  .btn-group { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+  .btn {
+    padding: 10px 18px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    background: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--ink);
+  }
+  .btn:hover { border-color: var(--purple-light); color: var(--purple); background: var(--purple-pale); }
+  .btn.selected { background: var(--purple); color: #fff; border-color: var(--purple); }
+  .btn.btn-primary {
+    background: var(--purple);
+    color: #fff;
+    border-color: var(--purple);
+    padding: 12px 24px;
+    font-weight: 600;
+  }
+  .btn.btn-primary:hover { background: var(--purple-light); }
+  .triage-result {
+    display: none;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 16px;
+    animation: fadeIn 0.3s ease;
+  }
+  .triage-result.show { display: block; }
+  .triage-result.result-red { background: var(--red-pale); border: 2px solid var(--red); }
+  .triage-result.result-yellow { background: var(--yellow-pale); border: 2px solid var(--yellow); }
+  .triage-result.result-green { background: var(--green-pale); border: 2px solid var(--green); }
+  .result-header { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .result-red .result-header { color: var(--red); }
+  .result-yellow .result-header { color: var(--yellow); }
+  .result-green .result-header { color: var(--green); }
+  .result-actions { margin-top: 12px; }
+  .result-actions li { font-size: 13px; margin-bottom: 6px; color: var(--ink); }
+
+  /* ── QUIZ ── */
+  .quiz-question {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+  .quiz-q-text { font-size: 15px; font-weight: 600; margin-bottom: 16px; color: var(--ink); }
+  .quiz-q-num { font-size: 11px; color: var(--purple); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+  .quiz-option {
+    display: block;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--ink);
+    transition: all 0.15s;
+    background: var(--white);
+    text-align: left;
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .quiz-option:hover:not(:disabled) { border-color: var(--purple-light); background: var(--purple-pale); }
+  .quiz-option.correct { background: var(--green-pale); border-color: var(--green); color: var(--green); font-weight: 600; }
+  .quiz-option.incorrect { background: var(--red-pale); border-color: var(--red); color: var(--red); }
+  .quiz-option:disabled { cursor: default; }
+  .quiz-feedback { margin-top: 10px; font-size: 13px; padding: 10px 14px; border-radius: 8px; display: none; }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.correct { background: var(--green-pale); color: var(--green); }
+  .quiz-feedback.incorrect { background: var(--red-pale); color: var(--red); }
+  .quiz-score { text-align: center; padding: 40px; display: none; }
+  .quiz-score.show { display: block; }
+  .quiz-score .big-score { font-family: 'DM Serif Display', serif; font-size: 72px; color: var(--purple); }
+  .quiz-score .score-label { font-size: 18px; color: var(--ink-muted); }
+
+  /* ── SCENARIO ── */
+  .scenario-box {
+    background: linear-gradient(135deg, var(--purple-pale) 0%, var(--teal-pale) 100%);
+    border: 1.5px solid var(--purple-light);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin: 16px 0;
+  }
+  .scenario-badge {
+    display: inline-block;
+    background: var(--purple);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    letter-spacing: 0.05em;
+  }
+  .scenario-text { font-size: 15px; font-weight: 500; color: var(--ink); line-height: 1.6; }
+  .scenario-choices { margin-top: 16px; }
+  .scenario-result { margin-top: 12px; padding: 14px; border-radius: 8px; display: none; font-size: 14px; }
+  .scenario-result.show { display: block; }
+  .scenario-result.good { background: var(--green-pale); border-left: 4px solid var(--green); color: var(--green); }
+  .scenario-result.bad { background: var(--red-pale); border-left: 4px solid var(--red); color: var(--red); }
+  .scenario-result.ok { background: var(--yellow-pale); border-left: 4px solid var(--yellow); color: var(--yellow); }
+
+  /* ── STEPS ── */
+  .steps { counter-reset: step; margin: 16px 0; }
+  .step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+    align-items: flex-start;
+  }
+  .step-num {
+    counter-increment: step;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: var(--purple);
+    color: #fff;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .step-body { flex: 1; padding-top: 6px; }
+  .step-body strong { display: block; font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+  .step-body p { font-size: 13px; margin: 0; }
+
+  /* ── ROLE TABLE ── */
+  .role-split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+  .role-col { background: var(--white); border-radius: var(--radius); padding: 20px; border: 1px solid var(--border); }
+  .role-col h4 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 12px; padding-bottom: 8px; border-bottom: 2px solid; }
+  .role-col.medsec h4 { color: var(--teal); border-color: var(--teal); }
+  .role-col.hinc h4 { color: var(--purple); border-color: var(--purple); }
+  .role-col ul { list-style: none; padding: 0; }
+  .role-col ul li { font-size: 13px; padding: 6px 0; border-bottom: 1px solid var(--border); color: var(--ink-muted); }
+  .role-col ul li:last-child { border: none; }
+  .role-col ul li::before { content: '→ '; font-weight: 700; }
+  .role-col.medsec ul li::before { color: var(--teal); }
+  .role-col.hinc ul li::before { color: var(--purple); }
+
+  /* ── TRACKER SIMULATOR ── */
+  #tracker-sim {
+    background: var(--white);
+    border: 2px solid var(--purple);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin: 20px 0;
+  }
+  #tracker-sim .sim-header {
+    background: var(--purple);
+    color: #fff;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .sim-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.4); }
+  .sim-dot.active { background: #4ade80; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+  .sim-body { padding: 20px; }
+  .sim-patient {
+    background: var(--purple-pale);
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+  .sim-patient-icon { font-size: 28px; }
+  .sim-patient-name { font-weight: 700; font-size: 15px; }
+  .sim-patient-meta { font-size: 12px; color: var(--ink-muted); }
+  .sim-current {
+    margin-bottom: 16px;
+  }
+  .sim-status-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; font-weight: 700; color: var(--ink-muted); margin-bottom: 6px; }
+  .sim-status-badge {
+    display: inline-block;
+    background: var(--purple);
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .sim-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .sim-action-btn {
+    padding: 8px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--ink);
+  }
+  .sim-action-btn:hover { border-color: var(--purple); color: var(--purple); background: var(--purple-pale); }
+  .sim-log { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 14px; }
+  .sim-log-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; font-weight: 700; color: var(--ink-muted); margin-bottom: 8px; }
+  .sim-log-entry {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    font-size: 12px;
+    margin-bottom: 6px;
+    color: var(--ink-muted);
+    animation: fadeIn 0.3s ease;
+  }
+  .sim-log-time { color: var(--purple); font-weight: 600; flex-shrink: 0; min-width: 60px; }
+
+  /* ── QUICK REF ── */
+  .ref-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+  .ref-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .ref-card h5 { font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--purple); }
+  .ref-card p, .ref-card li { font-size: 12px; color: var(--ink-muted); }
+  .ref-card ul { padding-left: 16px; }
+  .ref-card ul li { margin-bottom: 3px; }
+
+  /* ── COMPLETE BUTTON ── */
+  .complete-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--teal);
+    color: #fff;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 32px;
+  }
+  .complete-btn:hover { background: var(--teal-light); transform: translateY(-1px); }
+  .complete-btn.done { background: #16A34A; }
+
+  /* ── WELCOME ── */
+  .welcome-hero {
+    background: linear-gradient(135deg, var(--purple) 0%, #3B1F7A 100%);
+    color: #fff;
+    padding: 40px;
+    border-radius: var(--radius);
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .welcome-hero::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 200px; height: 200px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+  }
+  .welcome-hero h2 { font-family: 'DM Serif Display', serif; font-size: 28px; margin-bottom: 8px; }
+  .welcome-hero p { font-size: 15px; opacity: 0.85; line-height: 1.6; }
+  .welcome-modules {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  .welcome-module-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: var(--shadow);
+  }
+  .welcome-module-card:hover { border-color: var(--purple-light); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(91,45,142,0.15); }
+  .welcome-module-card .icon { font-size: 28px; margin-bottom: 10px; }
+  .welcome-module-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; color: var(--ink); }
+  .welcome-module-card p { font-size: 12px; color: var(--ink-muted); margin: 0; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    :root { --sidebar-w: 0px; }
+    #sidebar { transform: translateX(-280px); }
+    #sidebar.open { transform: translateX(0); width: 280px; }
+    #main { margin-left: 0; }
+    .module-content { padding: 20px; }
+    .triage-grid, .role-split { grid-template-columns: 1fr; }
+    .pipeline { flex-direction: column; }
+  }
+
+  /* Script output tag */
+  .script-block {
+    background: #1A1A2E;
+    color: #A8EDEA;
+    border-radius: var(--radius);
+    padding: 20px;
+    font-family: monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 12px 0;
+    white-space: pre-wrap;
+  }
+  .script-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.3); margin-bottom: 8px; }
+  .highlight { color: #FFEAA7; font-weight: 700; }
+  .bracket { color: #81ECEC; }
+
+  /* Site list */
+  .site-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+  .site-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .site-card h5 { font-size: 13px; font-weight: 700; color: var(--teal); margin-bottom: 6px; }
+  .site-card p { font-size: 12px; color: var(--ink-muted); margin: 2px 0; }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; background: var(--purple-pale); color: var(--purple); margin: 2px; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
+
+  select.form-select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--white);
+    cursor: pointer;
+    margin-bottom: 12px;
+  }
+  select.form-select:focus { outline: none; border-color: var(--purple); }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="sidebar-logo">
+    <span class="badge">FHC Training</span>
+    <h1>Intake Process Guide</h1>
+    <p>Flemingdon Health Centre · 2026</p>
+  </div>
+  <div class="sidebar-progress">
+    <div class="progress-label">
+      <span>Your Progress</span>
+      <span id="progress-pct">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+  <nav>
+    <div class="nav-section-label">Start Here</div>
+    <ul>
+      <li><a href="#" class="active" data-module="welcome" onclick="showModule('welcome',this)"><span class="icon">🏠</span> Welcome <span class="check">✓</span></a></li>
+    </ul>
+    <div class="nav-section-label">Core Modules</div>
+    <ul>
+      <li><a href="#" data-module="why" onclick="showModule('why',this)"><span class="icon">🎯</span> Why This Matters <span class="check">✓</span></a></li>
+      <li><a href="#" data-module="system" onclick="showModule('system',this)"><span class="icon">🏗️</span> The 5-Component System <span class="check">✓</span></a></li>
+      <li><a href="#" data-module="journey" onclick="showModule('journey',this)"><span class="icon">🗺️</span> Patient Journey (Stages) <span class="check">✓</span></a></li>
+      <li><a href="#" data-module="workflow" onclick="showModule('workflow',this)"><span class="icon">⚙️</span> Intake Workflow <span class="check">✓</span></a></li>
+      <li><a href="#" data-module="roles" onclick="showModule('roles',this)"><span class="icon">👥</span> Roles & Responsibilities <span class="check">✓</span></a></li>
+      <li><a href="#" data-module="triage" onclick="showModule('triage',this)"><span class="icon">🚦</span> Triage Codes <span class="check">✓</span></a></li>
+      <li><a href="#" data-module="tracker" onclick="showModule('tracker',this)"><span class="icon">🟣</span> The Purple Tracker <span class="check">✓</span></a></li>
+      <li><a href="#" data-module="statuses" onclick="showModule('statuses',this)"><span class="icon">📋</span> All 17 Statuses <span class="check">✓</span></a></li>
+      <li><a href="#" data-module="hcc" onclick="showModule('hcc',this)"><span class="icon">📞</span> HCC & Call Scripts <span class="check">✓</span></a></li>
+      <li><a href="#" data-module="insurance" onclick="showModule('insurance',this)"><span class="icon">🪪</span> Insurance Status <span class="check">✓</span></a></li>
+      <li><a href="#" data-module="faq" onclick="showModule('faq',this)"><span class="icon">❓</span> FAQs <span class="check">✓</span></a></li>
+    </ul>
+    <div class="nav-section-label">Practice</div>
+    <ul>
+      <li><a href="#" data-module="triage-tool" onclick="showModule('triage-tool',this)"><span class="icon">🔧</span> Triage Decision Tool <span class="check">✓</span></a></li>
+      <li><a href="#" data-module="tracker-sim" onclick="showModule('tracker-sim',this)"><span class="icon">🎮</span> Tracker Simulator <span class="check">✓</span></a></li>
+      <li><a href="#" data-module="scenarios" onclick="showModule('scenarios',this)"><span class="icon">🎭</span> Scenario Exercises <span class="check">✓</span></a></li>
+      <li><a href="#" data-module="quiz" onclick="showModule('quiz',this)"><span class="icon">✅</span> Knowledge Check <span class="check">✓</span></a></li>
+    </ul>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main id="main">
+  <div id="topbar">
+    <div>
+      <div class="breadcrumb" id="breadcrumb">FHC Intake Training</div>
+      <h2 id="topbar-title">Welcome</h2>
+    </div>
+    <button class="btn btn-primary" style="padding:8px 16px;font-size:13px;" onclick="nextModule()">Next Module →</button>
+  </div>
+
+  <!-- ══ WELCOME ══ -->
+  <div class="module-content active" id="mod-welcome">
+    <div class="welcome-hero">
+      <h2>FHC Intake Training</h2>
+      <p>Interactive training guide for HINCs, Medical Secretaries & Intake Staff.<br>Flemingdon Health Centre · East & North Toronto · January 2026</p>
+    </div>
+    <h3 style="margin-top:0">What You'll Learn</h3>
+    <p>Think of this training like learning to drive a complex but well-designed vehicle. The patient is in the passenger seat — your job is to navigate them safely from referral to attachment. Every module builds on the last.</p>
+    <div class="welcome-modules">
+      <div class="welcome-module-card" onclick="showModule('why', null)">
+        <div class="icon">🎯</div>
+        <h4>Why This Matters</h4>
+        <p>The provincial target & your role in it</p>
+      </div>
+      <div class="welcome-module-card" onclick="showModule('system', null)">
+        <div class="icon">🏗️</div>
+        <h4>5-Component System</h4>
+        <p>How all the pieces fit together</p>
+      </div>
+      <div class="welcome-module-card" onclick="showModule('tracker', null)">
+        <div class="icon">🟣</div>
+        <h4>The Purple Tracker</h4>
+        <p>Your central documentation tool</p>
+      </div>
+      <div class="welcome-module-card" onclick="showModule('triage-tool', null)">
+        <div class="icon">🔧</div>
+        <h4>Practice Tools</h4>
+        <p>Triage simulator & scenarios</p>
+      </div>
+    </div>
+    <div class="callout tip" style="margin-top:24px;">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body"><strong>How to use this guide</strong><p>Work through each module using the left sidebar. Mark each one complete when done. Interactive tools and a knowledge check quiz are waiting at the end.</p></div>
+    </div>
+    <button class="complete-btn" onclick="completeModule('welcome')">Start Training →</button>
+  </div>
+
+  <!-- ══ WHY ══ -->
+  <div class="module-content" id="mod-why">
+    <div class="module-title">Why This Work Matters</div>
+    <div class="module-subtitle">The provincial target and your role at the bridge between patients and care</div>
+
+    <div class="card-grid">
+      <div class="stat-card"><div class="num">6,000</div><div class="label">New patients to attach by July 31, 2026</div></div>
+      <div class="stat-card" style="background:var(--teal)"><div class="num">13+</div><div class="label">Integrated referral channels flowing in</div></div>
+      <div class="stat-card" style="background:#3B1F7A"><div class="num">10</div><div class="label">Days max from form to first contact</div></div>
+    </div>
+
+    <h3>The Ontario Primary Care Action Plan</h3>
+    <p>FHC received provincial funding to attach approximately 6,000 new clients to primary care in East & North Toronto. This isn't an abstract goal — it's a person waiting for a doctor. Active outreach means referrals are accelerating daily.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">🌉</div>
+      <div class="callout-body"><strong>Your role as the bridge</strong><p>From first contact to attachment, the intake team connects patients to the care they need. Every step you take — every call made, every tracker updated — moves someone closer to having a family doctor.</p></div>
+    </div>
+
+    <h3>The Five Key Messages for New Patients</h3>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Yes, FHC IS open for new primary care clients</strong><p>Lead with this — many patients assume community health centres are full.</p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><strong>First step: Complete the Oceans Outreach Form</strong><p>Online, in-person, phone, or email. Staff can help. One form per person, same form for all FHC sites.</p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Someone will contact them within 10 days</strong><p>This is our standard. Track it and meet it.</p></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Urgent needs = Access Clinic prioritization</strong><p>Patients with immediate medical needs are prioritized for the Access Clinic.</p></div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-body"><strong>One OCEANS form covers all FHC sites</strong><p>Flemingdon, Fairview, HATP, MGH, NYGH — one form does it all.</p></div></div>
+    </div>
+
+    <button class="complete-btn" onclick="completeModule('why')">✓ Got It — Next Module</button>
+  </div>
+
+  <!-- ══ SYSTEM ══ -->
+  <div class="module-content" id="mod-system">
+    <div class="module-title">The 5-Component System</div>
+    <div class="module-subtitle">How all integrated parts work together — like an assembly line where every station hands off to the next</div>
+
+    <div class="callout tip">
+      <div class="callout-icon">🏭</div>
+      <div class="callout-body"><strong>The Assembly Line Analogy</strong><p>Think of the intake system like a car assembly line. Each component is a station. Every patient moves through all 5 — no skipping, no bypassing. The Purple Tracker is the conveyor belt that keeps everyone moving in sync.</p></div>
+    </div>
+
+    <div style="overflow-x:auto; margin: 20px 0;">
+      <table class="status-table" style="min-width:600px">
+        <thead>
+          <tr><th>#</th><th>Component</th><th>What It Does</th><th>Key Rule</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>1</strong></td><td><strong>Referral Funnel</strong></td><td>13+ sources feed into FHC — phone, walk-ins, OCEAN forms, hospitals, partners, and more</td><td>No Referral Left Behind</td></tr>
+          <tr><td><strong>2</strong></td><td><strong>Purple Tracker</strong></td><td>Single source of truth inside the EMR — inserted in every patient chart</td><td>Updated at every stage change</td></tr>
+          <tr><td><strong>3</strong></td><td><strong>Triage Lanes</strong></td><td>Red / Yellow / Green — equity-based routing to the right level of care</td><td>Every patient gets a code</td></tr>
+          <tr><td><strong>4</strong></td><td><strong>Patient Stages</strong></td><td>Stage 0 → 1 → 2 → 3: Full journey from referral to rostering</td><td>Track the whole journey</td></tr>
+          <tr><td><strong>5</strong></td><td><strong>Equity Lens</strong></td><td>Document language, immigration status, safety concerns, complexity — Zero Dropout Mandate</td><td>Barriers must be documented</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Referral Sources (13+)</h3>
+    <p>Every one of these channels feeds into the same system — all must be logged immediately:</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;">
+      <span class="tag">📞 Phone (Ext. 280)</span>
+      <span class="tag">🚶 Walk-ins</span>
+      <span class="tag">💻 OCEAN Forms</span>
+      <span class="tag">🤝 Community Health Ambassadors</span>
+      <span class="tag">🏥 Hospital Access Clinics (MGH/NYGH)</span>
+      <span class="tag">🚨 Emergency Departments</span>
+      <span class="tag">👨‍⚕️ Doctor Listings (eReferrals)</span>
+      <span class="tag">🔗 ETHP Partners</span>
+      <span class="tag">🔗 NYTHP Partners</span>
+    </div>
+
+    <div class="callout rule">
+      <div class="callout-icon">🚨</div>
+      <div class="callout-body"><strong>Mandatory Logging Rule</strong><p>Every referral source MUST be logged with a unique Purple Tracker entry immediately. There are no exceptions. "No Referral Left Behind."</p></div>
+    </div>
+
+    <button class="complete-btn" onclick="completeModule('system')">✓ Understood — Next Module</button>
+  </div>
+
+  <!-- ══ JOURNEY ══ -->
+  <div class="module-content" id="mod-journey">
+    <div class="module-title">Patient Journey: Stages 0 → 3</div>
+    <div class="module-subtitle">The four stages from referral to being rostered with a family doctor</div>
+
+    <div class="callout tip">
+      <div class="callout-icon">✈️</div>
+      <div class="callout-body"><strong>The Flight Analogy</strong><p>Stage 0 is the patient at the booking desk. Stage 1 is check-in. Stage 2 is boarding and settling in. Stage 3 is landed — they have a permanent family doctor. Your job is to make sure no one misses their flight.</p></div>
+    </div>
+
+    <div class="pipeline">
+      <div class="stage">
+        <div class="stage-num">0</div>
+        <div class="stage-label">Stage 0</div>
+        <div class="stage-title">No Touchpoint Yet</div>
+        <div class="stage-who">Med Sec / Intake Team</div>
+        <div class="stage-desc">Chart created. Purple Tracker inserted. Referral source logged. Lane assigned. Equity flags screened.</div>
+        <div class="stage-arrow">→</div>
+      </div>
+      <div class="stage">
+        <div class="stage-num">1</div>
+        <div class="stage-label">Stage 1</div>
+        <div class="stage-title">Holistic Intake Navigation</div>
+        <div class="stage-who">HINC Counsellor</div>
+        <div class="stage-desc">First contact made. Forms sent, completed, or assisted. Barriers documented. Triage confirmed.</div>
+        <div class="stage-arrow">→</div>
+      </div>
+      <div class="stage">
+        <div class="stage-num">2</div>
+        <div class="stage-label">Stage 2</div>
+        <div class="stage-title">Clinical Stabilization</div>
+        <div class="stage-who">Access Clinic Team</div>
+        <div class="stage-desc">1–2 clinical visits at Access Stabilization Clinic. Rostered to AC, not yet to specific MD/NP.</div>
+        <div class="stage-arrow">→</div>
+      </div>
+      <div class="stage">
+        <div class="stage-num">3</div>
+        <div class="stage-label">Stage 3</div>
+        <div class="stage-title">Primary Care Attached</div>
+        <div class="stage-who">Primary Care</div>
+        <div class="stage-desc">Meet & Greet completed. Patient rostered to Family Physician or NP. 2027 goal achieved.</div>
+      </div>
+    </div>
+
+    <h3>Who Does What at Each Stage</h3>
+    <div class="card">
+      <table class="status-table">
+        <thead><tr><th>Stage</th><th>PSS Status (Category)</th><th>Primary Metric</th></tr></thead>
+        <tbody>
+          <tr><td>0 → 1</td><td><span class="cat-badge cat-1">Cat 1</span> Chart Made</td><td>Time to 1st touchpoint</td></tr>
+          <tr><td>1 work</td><td><span class="cat-badge cat-2">Cat 2</span> HINC Processing</td><td>Time to 1st clinical touchpoint</td></tr>
+          <tr><td>External</td><td><span class="cat-badge cat-3">Cat 3</span> External Referral</td><td>Confirmed transfer</td></tr>
+          <tr><td>End</td><td><span class="cat-badge cat-4">Cat 4</span> End States</td><td>Attachment completed or closed</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⏰</div>
+      <div class="callout-body"><strong>10-Day Standard</strong><p>Contact must be made within 10 days of form submission. Stale statuses unchanged for 7+ days trigger automated alerts. Don't let patients sit.</p></div>
+    </div>
+
+    <button class="complete-btn" onclick="completeModule('journey')">✓ Got It — Next Module</button>
+  </div>
+
+  <!-- ══ WORKFLOW ══ -->
+  <div class="module-content" id="mod-workflow">
+    <div class="module-title">Intake Workflow — Step by Step</div>
+    <div class="module-subtitle">The four key steps every patient goes through (note: varies slightly by site)</div>
+
+    <div class="callout info">
+      <div class="callout-icon">🗒️</div>
+      <div class="callout-body"><strong>Site Variation Note</strong><p>The workflow below is the core process. Individual sites (Flemingdon, Fairview, HATP, MGH, NYGH) may have slight variations. When in doubt, check with your intake lead.</p></div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>OCEAN Form Completed</strong>
+          <p>Client completes the online Oceans Outreach Form. Staff can assist in person, by phone, or by email. One form per person — works across all FHC sites.</p>
+          <p style="margin-top:6px"><strong>Who:</strong> Patient / CHA / HINC</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>Mini Chart Created in PSS</strong>
+          <p>Secretary creates the chart. Purple Tracker is added immediately. Forms are sent to client via OCEAN secure email. Chart is backdated to the date of creation.</p>
+          <p style="margin-top:6px"><strong>Who:</strong> Medical Secretary</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <strong>Assessment & Triage</strong>
+          <p>HINC calls the patient. A triage code is assigned (Red / Yellow / Green). The HEQ form is completed. Equity flags are documented — language, immigration status, safety, complexity.</p>
+          <p style="margin-top:6px"><strong>Who:</strong> HINC / Intake Worker</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <strong>Booking or Transfer</strong>
+          <p>Based on triage code and postal code: book Access Clinic appointment, Meet & Greet, or transfer to an external partner organization.</p>
+          <p style="margin-top:6px"><strong>Who:</strong> Medical Secretary / HINC</p>
+        </div>
+      </div>
+    </div>
+
+    <button class="complete-btn" onclick="completeModule('workflow')">✓ Clear — Next Module</button>
+  </div>
+
+  <!-- ══ ROLES ══ -->
+  <div class="module-content" id="mod-roles">
+    <div class="module-title">Roles & Responsibilities</div>
+    <div class="module-subtitle">Who does what — think of it as the front-of-house vs. back-of-house in a restaurant</div>
+
+    <div class="callout tip">
+      <div class="callout-icon">🍽️</div>
+      <div class="callout-body"><strong>The Restaurant Analogy</strong><p>The Medical Secretary is like the host — first contact, seating (chart creation), managing bookings. The HINC is the server — the real relationship builder who takes the full order, understands complex needs, and navigates the kitchen (system) for the patient.</p></div>
+    </div>
+
+    <div class="role-split">
+      <div class="role-col medsec">
+        <h4>Medical Secretary / CHA</h4>
+        <ul>
+          <li>Create mini chart for every new client</li>
+          <li>Add and complete the Purple Tracker</li>
+          <li>Send forms via OCEAN (Intake Package #1)</li>
+          <li>Schedule appointments once forms are verified</li>
+          <li>Prioritize urgent and navigation-free cases</li>
+          <li>Monitor and update patient status in EMR</li>
+        </ul>
+      </div>
+      <div class="role-col hinc">
+        <h4>HINC / Intake Worker</h4>
+        <ul>
+          <li>Call patients — confirm details & needs</li>
+          <li>Explain patient-provider relationship & expectations</li>
+          <li>Assign triage code (Red / Yellow / Green)</li>
+          <li>Complete HEQ form</li>
+          <li>Arrange interpreters when needed</li>
+          <li>Document encounter & message Medical Secretary</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">💬</div>
+      <div class="callout-body"><strong>Communication Channels</strong><p><strong>Patient communication:</strong> Always through PSS messages (secure, documented, traceable).<br><strong>Team communication:</strong> Microsoft Teams for general coordination.</p></div>
+    </div>
+
+    <button class="complete-btn" onclick="completeModule('roles')">✓ Got It — Next Module</button>
+  </div>
+
+  <!-- ══ TRIAGE ══ -->
+  <div class="module-content" id="mod-triage">
+    <div class="module-title">Triage & Appointment Coding</div>
+    <div class="module-subtitle">The traffic light system — every patient gets a code. Red means go fastest.</div>
+
+    <div class="triage-grid">
+      <div class="triage-card red">
+        <span class="badge-color">🔴 RED</span>
+        <h4>URGENT</h4>
+        <p><strong>Who:</strong> Patients with immediate medical needs</p>
+        <p class="action">→ Book promptly with an MD<br>Status: BOOKED</p>
+        <p style="margin-top:8px;font-size:12px;">⏱ 30 min (English) / 45 min (with interpreter)</p>
+      </div>
+      <div class="triage-card yellow">
+        <span class="badge-color">🟡 YELLOW</span>
+        <h4>MEET & GREET</h4>
+        <p><strong>Who:</strong> Seniors, multiple chronic conditions, pregnancy, newcomers, language barriers, recent hospital discharge</p>
+        <p class="action">→ Book a Meet & Greet appointment<br>Status: BOOKED / TO BE BOOKED M&G</p>
+        <p style="font-size:12px;">May direct to FV MDAC, PCNC, HATP, FL, or NYGH Access Clinics</p>
+      </div>
+      <div class="triage-card green">
+        <span class="badge-color">🟢 GREEN</span>
+        <h4>STANDARD</h4>
+        <p><strong>Who:</strong> Patients who just need a family doctor — no urgent or complex needs</p>
+        <p class="action">→ Give contact number; patient calls if issues arise<br>Status: TO BE BOOKED FOR M&G</p>
+        <p style="font-size:12px;">No appointment needed at this point. For FL, HATP: book in access clinic or M&G</p>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">📏</div>
+      <div class="callout-body"><strong>Appointment Lengths</strong><p>RED appointments: 30 minutes in English, 45 minutes when an interpreter is needed. Always confirm interpreter arrangements before booking.</p></div>
+    </div>
+
+    <h3>Partner Transfer Lane</h3>
+    <p>Some patients — based on postal code, language, or capacity — may be routed to external partner organizations rather than booked internally. This is a valid triage outcome and must be documented using the Cat 3 External Referral statuses.</p>
+
+    <button class="complete-btn" onclick="completeModule('triage')">✓ Understood — Next Module</button>
+  </div>
+
+  <!-- ══ TRACKER ══ -->
+  <div class="module-content" id="mod-tracker">
+    <div class="module-title">The Purple Tracker</div>
+    <div class="module-subtitle">Your most important documentation tool — the sticky note on every patient file that the whole team can see</div>
+
+    <div class="callout tip">
+      <div class="callout-icon">📌</div>
+      <div class="callout-body"><strong>The Sticky Note Analogy</strong><p>The Purple Tracker is like a visible sticky note on the front of a patient's physical file — except everyone on the team can see it in real time, it's timestamped, and it never falls off. Every time a patient moves, the note gets updated.</p></div>
+    </div>
+
+    <h3>What the Purple Tracker IS</h3>
+    <div class="card-grid">
+      <div class="card" style="padding:16px">
+        <h4 style="color:var(--purple)">📄 A Form in PSS</h4>
+        <p style="font-size:13px">Full name: <em>"FHC – Consultation Request – FHC TNO Intake – New"</em>. Added to every new patient chart.</p>
+      </div>
+      <div class="card" style="padding:16px">
+        <h4 style="color:var(--purple)">📊 A Real-Time Dashboard</h4>
+        <p style="font-size:13px">Shows every patient's current status at a glance — like a live scoreboard for intake.</p>
+      </div>
+      <div class="card" style="padding:16px">
+        <h4 style="color:var(--purple)">🕐 A Timestamp Log</h4>
+        <p style="font-size:13px">Every status update is date-stamped. Creates a full audit trail from Day 0 to rostering.</p>
+      </div>
+      <div class="card" style="padding:16px">
+        <h4 style="color:var(--purple)">💬 A Team Communication Tool</h4>
+        <p style="font-size:13px">When a HINC updates the tracker, Medical Secretaries and managers see it immediately.</p>
+      </div>
+    </div>
+
+    <h3>How to Add the Purple Tracker (6 Steps)</h3>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Open the patient chart in PSS</strong><p>Press <code>Ctrl + ]</code> to open the chart quickly.</p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Insert the tracker form</strong><p>Add: <em>"FHC – Consultation Request – FHC TNO Intake – New"</em>. Back-date it to the date the chart was created.</p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Fill ALL mandatory fields</strong><p>Urgency lane · Source (HCC list / Ocean form / In person / Phone) · Postal Code · Referral Status · OHT region</p></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Set the opening status</strong><p><em>"Chart Created: Pre-Attachment"</em> is always the first status. This is Stage 0.</p></div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-body"><strong>Update status at every milestone</strong><p>Call made → forms sent → appointment booked → each time, update the status immediately. Not tomorrow — now.</p></div></div>
+      <div class="step"><div class="step-num">6</div><div class="step-body"><strong>Add the PSS Dashboard</strong><p>Main PSS window → Dashboard → Add (+) → "FHC – Consultation Request – FHC TNO Intake – New". Shows all active patients at a glance.</p></div></div>
+    </div>
+
+    <h3>Why Updating It Matters</h3>
+    <div class="two-col">
+      <div class="callout info" style="margin:0">
+        <div class="callout-icon">📈</div>
+        <div class="callout-body"><strong>Your workload becomes visible</strong><p>An accurate tracker shows how many patients each role is managing — essential for fair resource planning.</p></div>
+      </div>
+      <div class="callout warn" style="margin:0">
+        <div class="callout-icon">🔔</div>
+        <div class="callout-body"><strong>7-day alert rule</strong><p>Stale statuses unchanged for 7+ days trigger automated alerts. Updating keeps patients moving.</p></div>
+      </div>
+    </div>
+
+    <div class="callout rule" style="margin-top:16px">
+      <div class="callout-icon">📌</div>
+      <div class="callout-body"><strong>The Golden Rule</strong><p>Update the tracker every single time a patient's status changes. Not tomorrow — <strong>now</strong>. Monthly reporting is NOT tracked by this tool — it tracks individual patient journeys.</p></div>
+    </div>
+
+    <button class="complete-btn" onclick="completeModule('tracker')">✓ Got It — Next Module</button>
+  </div>
+
+  <!-- ══ STATUSES ══ -->
+  <div class="module-content" id="mod-statuses">
+    <div class="module-title">All 17 EMR Status Entries</div>
+    <div class="module-subtitle">Every possible patient status — what each one means and when to use it</div>
+
+    <table class="status-table">
+      <thead>
+        <tr><th>Category</th><th>Status</th><th>What It Means</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="cat-badge cat-1">Cat 1</span></td><td><strong>Chart Made (Stage 0)</strong></td><td>Chart created in PSS. Starting point — the 'Day 0' timestamp.</td></tr>
+        <tr><td><span class="cat-badge cat-2">Cat 2</span></td><td><strong>Stage 1: Initiated — Forms sent</strong></td><td>First contact made. Intake forms sent to patient via OCEAN.</td></tr>
+        <tr><td><span class="cat-badge cat-2">Cat 2</span></td><td><strong>HINC Attached — Assisted Intake</strong></td><td>Language or literacy barrier. HINC actively helped complete forms.</td></tr>
+        <tr><td><span class="cat-badge cat-2">Cat 2</span></td><td><strong>HINC Attached — Forms Done</strong></td><td>All paperwork complete. Patient waiting to be booked.</td></tr>
+        <tr><td><span class="cat-badge cat-2">Cat 2</span></td><td><strong>HINC Attached — Complete</strong></td><td>Full HINC intake done. Patient attached to primary care but no appointment booked yet. Knows Access Clinic numbers and will call back.</td></tr>
+        <tr><td><span class="cat-badge cat-2">Cat 2</span></td><td><strong>HINC Navigation Support</strong></td><td>Navigated to community/social services. No primary care needed.</td></tr>
+        <tr><td><span class="cat-badge cat-2">Cat 2</span></td><td><strong>CHW Group Program</strong></td><td>Enrolled in a Community Health Worker group program as the main intervention.</td></tr>
+        <tr><td><span class="cat-badge cat-3">Cat 3</span></td><td><strong>To Be Transferred Externally</strong></td><td>Decision made to send to external provider. Action still pending.</td></tr>
+        <tr><td><span class="cat-badge cat-3">Cat 3</span></td><td><strong>Referred Externally: Pending</strong></td><td>Referral sent. Waiting for external provider to confirm acceptance.</td></tr>
+        <tr><td><span class="cat-badge cat-3">Cat 3</span></td><td><strong>Referred Externally: Confirmed</strong></td><td>External provider confirmed. Transfer complete. Case closed.</td></tr>
+        <tr><td><span class="cat-badge cat-4">Cat 4</span></td><td><strong>Complete (Already Attached)</strong></td><td>Patient already has a family doctor. No attachment action needed.</td></tr>
+        <tr><td><span class="cat-badge cat-4">Cat 4</span></td><td><strong>Declined</strong></td><td>Patient explicitly refused services. Legal record of voluntary refusal. Does NOT have a family doctor.</td></tr>
+        <tr><td><span class="cat-badge cat-4">Cat 4</span></td><td><strong>No Show</strong></td><td>Had a booked appointment but did not attend and did not cancel. Needs to be rebooked.</td></tr>
+        <tr><td><span class="cat-badge cat-4">Cat 4</span></td><td><strong>Unable to Be Reached</strong></td><td>Multiple attempts made. Patient could not be contacted. Case closed. Can reopen once patient calls back.</td></tr>
+        <tr><td><span class="cat-badge cat-4">Cat 4</span></td><td><strong>Booked (but not seen)</strong></td><td>Appointment booked and upcoming. Journey not yet complete.</td></tr>
+        <tr><td><span class="cat-badge cat-4">Cat 4</span></td><td><strong>Stage 2: Seen AC 1–2 Times</strong></td><td>Attended one or two Access Clinic visits.</td></tr>
+        <tr><td><span class="cat-badge cat-4">Cat 4</span></td><td><strong>Stage 3: M&G Booked (Complete)</strong></td><td>Meet & Greet with permanent provider booked. Attachment confirmed.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body"><strong>Stale Status Alert</strong><p>Any status that hasn't changed in 7+ days triggers an automated alert. This is by design — it ensures no patient falls through the cracks. If you see an alert, investigate and update.</p></div>
+    </div>
+
+    <button class="complete-btn" onclick="completeModule('statuses')">✓ Memorized — Next Module</button>
+  </div>
+
+  <!-- ══ HCC ══ -->
+  <div class="module-content" id="mod-hcc">
+    <div class="module-title">Health Care Connect (HCC) & Call Scripts</div>
+    <div class="module-subtitle">The HCC workflow and what to say on every call</div>
+
+    <h3>HCC Workflow — 5 Steps</h3>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><strong>HCC List Received</strong><p>Add list clients to EMR immediately. The HCC list must NOT be stored outside the EMR and must be discarded after use.</p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Mini Charts Created</strong><p>Medical Secretary OR HINCs create mini charts for all new clients on the list.</p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Purple Tracker Inserted</strong><p>Added to every chart immediately upon list processing.</p></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body"><strong>HINCs Call Patients</strong><p>Track status in PSS after each call. All data in EMR only — no external spreadsheets.</p></div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-body"><strong>Data Reported Regularly</strong><p>Referrals received, Transferred-pending, and Transferred-confirmed are reported to funders.</p></div></div>
+    </div>
+
+    <h3>Sample Call Script</h3>
+    <div class="script-block"><span class="highlight">OPENER:</span>
+<span class="bracket">"Hi, I'm [Your Name] from Flemingdon Health Centre. Your name came from the Health Care Connect list."</span>
+
+<span class="highlight">Q1:</span> Do you already have a family doctor?
+  → <span class="bracket">YES:</span> Note the doctor's name → document in tracker
+  → <span class="bracket">NO:</span> "We can help — let's start with the HEQ form"
+
+<span class="highlight">Q2:</span> Do you need language support?
+  → <span class="bracket">YES:</span> Arrange interpreter now, or call back with interpreter
+  → <span class="bracket">NO:</span> Send secure email (password = date of birth)
+
+<span class="highlight">Q3:</span> Do you need an appointment soon?
+  → <span class="bracket">YES (urgent):</span> Book in appropriate Access Clinic
+  → <span class="bracket">NO:</span> Send secure email (password = email address)</div>
+
+    <h3>After the Call — Post-Call Actions</h3>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Message the Medical Secretary</strong><p>Include: patient name, outcome of call (has doctor / needs attachment), urgent needs, interpreter requirements, confirmation that forms were sent.</p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Document the Encounter in PSS</strong><p>Use the EMR shortcut toolbar. Record: date/time, patient response, language needs, and next steps. Use the 'HCC Intake' or 'CHW Call' template.</p></div></div>
+    </div>
+
+    <div class="callout rule">
+      <div class="callout-icon">🔒</div>
+      <div class="callout-body"><strong>Key Data Rules</strong><p>All data recorded in EMR (PSS) only — no external spreadsheets. HCC lists must be discarded after use. Patient communication via PSS messages. Team communication via Teams.</p></div>
+    </div>
+
+    <button class="complete-btn" onclick="completeModule('hcc')">✓ Ready to Call — Next Module</button>
+  </div>
+
+  <!-- ══ INSURANCE ══ -->
+  <div class="module-content" id="mod-insurance">
+    <div class="module-title">Insurance Status</div>
+    <div class="module-subtitle">Quick reference guide — document insurance correctly in every chart</div>
+
+    <div class="two-col">
+      <div>
+        <h3 style="margin-top:0">Insurance Categories</h3>
+        <div class="card" style="padding:16px">
+          <ul style="list-style:none;padding:0">
+            <li style="padding:8px 0;border-bottom:1px solid var(--border);font-size:13px">🔴 <strong>Uninsured</strong></li>
+            <li style="padding:8px 0;border-bottom:1px solid var(--border);font-size:13px">🔵 <strong>Insured by Third Party</strong></li>
+            <li style="padding:8px 0;border-bottom:1px solid var(--border);font-size:13px">🌍 <strong>Out of Province</strong></li>
+            <li style="padding:8px 0;border-bottom:1px solid var(--border);font-size:13px">📋 <strong>Other</strong></li>
+            <li style="padding:8px 0;border-bottom:1px solid var(--border);font-size:13px">🏥 <strong>CHCR — Landed Immigrants</strong></li>
+            <li style="padding:8px 0;border-bottom:1px solid var(--border);font-size:13px">⏳ <strong>CHCR — In Process (sponsorship)</strong></li>
+            <li style="padding:8px 0;font-size:13px">🌐 <strong>CHCR — Undocumented</strong></li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <h3 style="margin-top:0">Supplemental Options</h3>
+        <div class="card" style="padding:16px">
+          <p style="font-size:13px;margin-bottom:10px"><strong>IFH (Interim Federal Health)</strong><br>Covered under Blue Cross. If rejected, client becomes uninsured. During appeal = uninsured status.</p>
+          <p style="font-size:13px;margin-bottom:10px"><strong>Aboriginal Non-Insured Health Benefits</strong><br>Supplemental coverage — document in chart accordingly.</p>
+          <p style="font-size:13px;margin-bottom:10px"><strong>Third Party Private Insurer</strong><br>Super visa holders, students, visitors — not uninsured, but should have private insurance.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>Where to Document Insurance</h3>
+    <div class="callout info">
+      <div class="callout-icon">📍</div>
+      <div class="callout-body"><strong>Documentation Locations</strong><p>Record insurance status in the <strong>comment section of demographics</strong> (visible on chart's left corner). IFH details in the <strong>Insurance Number field AND comments</strong>. File a copy of IFH document with UCI in chart. Update in <strong>HEQ form</strong> in PSS.</p></div>
+    </div>
+
+    <button class="complete-btn" onclick="completeModule('insurance')">✓ Got It — Next Module</button>
+  </div>
+
+  <!-- ══ FAQ ══ -->
+  <div class="module-content" id="mod-faq">
+    <div class="module-title">Frequently Asked Questions</div>
+    <div class="module-subtitle">Common questions patients ask — and how to answer them</div>
+
+    <div class="card" style="margin-bottom:12px">
+      <h4 style="color:var(--purple);font-size:14px;margin:0 0 6px">Q: Can patients request a female provider?</h4>
+      <p style="font-size:13px;margin:0"><strong>A:</strong> Discouraged — we do our best to honour provider preferences, but availability depends on capacity. Document the request during intake.</p>
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <h4 style="color:var(--purple);font-size:14px;margin:0 0 6px">Q: Can family members see the same doctor?</h4>
+      <p style="font-size:13px;margin:0"><strong>A:</strong> We try to keep families together, but if a panel is full we assign another team member. All providers work as coordinated teams.</p>
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <h4 style="color:var(--purple);font-size:14px;margin:0 0 6px">Q: Is switching providers possible?</h4>
+      <p style="font-size:13px;margin:0"><strong>A:</strong> Discouraged — depends on capacity and continuity of care. Requests are reviewed carefully by intake.</p>
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <h4 style="color:var(--purple);font-size:14px;margin:0 0 6px">Q: What if a patient is on a work permit or visit visa?</h4>
+      <p style="font-size:13px;margin:0"><strong>A:</strong> If they have OHIP, we take them as patients. If they may not have OHIP, refer to the appropriate organization.</p>
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <h4 style="color:var(--purple);font-size:14px;margin:0 0 6px">Q: What does a patient need for their first appointment?</h4>
+      <p style="font-size:13px;margin:0"><strong>A:</strong> Health card (if available), insurance documents, medication list, pharmacy info, and any medical records. Arrive on time; 24hr notice to cancel.</p>
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <h4 style="color:var(--purple);font-size:14px;margin:0 0 6px">Q: Which partner organizations might patients be transferred to?</h4>
+      <p style="font-size:13px;margin:0"><strong>A:</strong> HATM, Albany Medical, Magenta Health, Don Mills FHT, Bridgepoint FHT, SETFHT, Unify Health, Access Alliance, Generations, South Riverdale CHC, Avesta Medical — based on postal code and capacity.</p>
+    </div>
+
+    <h3>Access Clinic Locations & Hours</h3>
+    <div class="site-list">
+      <div class="site-card"><h5>🏥 Flemingdon Site</h5><p>10 Gateway Blvd</p><p>Mon, Wed 4pm–8pm · Alt. Sat 9am–2pm</p></div>
+      <div class="site-card"><h5>🏥 HATP Site</h5><p>45 Overlea Blvd, 2nd Fl (Entrance 6)</p><p>Tue, Thu 4pm–8pm · Alt. Sat 9am–2pm</p></div>
+      <div class="site-card"><h5>🏥 MGH Site</h5><p>825 Coxwell Ave, T2</p><p>Mon–Fri 11am–7pm</p></div>
+      <div class="site-card"><h5>🏥 NYGH / Fairview Clinic</h5><p>243 Consumers Rd, Suite 300</p><p>Mon–Thu 4pm–7:30pm · Ph: 647-564-7834</p><p><em>(Appointments only)</em></p></div>
+    </div>
+
+    <button class="complete-btn" onclick="completeModule('faq')">✓ Ready to Practice!</button>
+  </div>
+
+  <!-- ══ TRIAGE TOOL ══ -->
+  <div class="module-content" id="mod-triage-tool">
+    <div class="module-title">Triage Decision Tool</div>
+    <div class="module-subtitle">Answer questions about a patient to determine their triage code</div>
+
+    <div class="tool-container">
+      <div class="tool-header">🚦 Interactive Triage Calculator</div>
+      <div class="tool-body">
+        <div class="question-label">Does the patient have immediate medical needs (pain, bleeding, acute illness)?</div>
+        <div class="btn-group">
+          <button class="btn" onclick="triageSelect('urgent','yes')">Yes — immediate needs</button>
+          <button class="btn" onclick="triageSelect('urgent','no')">No — stable</button>
+        </div>
+
+        <div id="triage-q2" style="display:none">
+          <div class="question-label">Does the patient have any of the following? (select all that apply)</div>
+          <div class="btn-group" id="complexity-btns">
+            <button class="btn" onclick="toggleComplex(this,'senior')">Senior / Elderly</button>
+            <button class="btn" onclick="toggleComplex(this,'chronic')">Multiple chronic conditions</button>
+            <button class="btn" onclick="toggleComplex(this,'pregnancy')">Pregnancy</button>
+            <button class="btn" onclick="toggleComplex(this,'newcomer')">Newcomer / recent arrival</button>
+            <button class="btn" onclick="toggleComplex(this,'language')">Language barrier</button>
+            <button class="btn" onclick="toggleComplex(this,'hospital')">Recent hospital discharge</button>
+            <button class="btn" onclick="toggleComplex(this,'none')">None of the above</button>
+          </div>
+          <button class="btn btn-primary" onclick="calcTriage()" style="margin-top:12px">Calculate Triage Code →</button>
+        </div>
+
+        <div class="triage-result" id="triage-result-red result-red">
+          <div class="result-header">🔴 RED — URGENT</div>
+          <div class="result-actions">
+            <ul>
+              <li>✓ Book promptly with an MD</li>
+              <li>✓ Update status to: <strong>BOOKED</strong></li>
+              <li>✓ Schedule 30 min (English) or 45 min (with interpreter)</li>
+              <li>✓ Arrange interpreter if needed before booking</li>
+            </ul>
+          </div>
+          <button class="btn" style="margin-top:12px" onclick="resetTriage()">Try Another Patient →</button>
+        </div>
+        <div class="triage-result" id="triage-result-yellow">
+          <div class="result-header">🟡 YELLOW — MEET & GREET</div>
+          <div class="result-actions">
+            <ul>
+              <li>✓ Book a Meet & Greet appointment</li>
+              <li>✓ Status: <strong>BOOKED</strong> or <strong>TO BE BOOKED FOR M&G</strong></li>
+              <li>✓ Consider: FV MDAC, PCNC clinic, HATP, FL, or NYGH Access Clinics</li>
+              <li>✓ Document complexity flags in tracker</li>
+            </ul>
+          </div>
+          <button class="btn" style="margin-top:12px" onclick="resetTriage()">Try Another Patient →</button>
+        </div>
+        <div class="triage-result" id="triage-result-green">
+          <div class="result-header">🟢 GREEN — STANDARD</div>
+          <div class="result-actions">
+            <ul>
+              <li>✓ Give contact number; patient calls if issues arise</li>
+              <li>✓ Status: <strong>TO BE BOOKED FOR M&G FV</strong></li>
+              <li>✓ For FL/HATP: book in access clinic or M&G</li>
+              <li>✓ No immediate appointment needed</li>
+            </ul>
+          </div>
+          <button class="btn" style="margin-top:12px" onclick="resetTriage()">Try Another Patient →</button>
+        </div>
+      </div>
+    </div>
+    <button class="complete-btn" onclick="completeModule('triage-tool')">✓ Mark Complete</button>
+  </div>
+
+  <!-- ══ TRACKER SIM ══ -->
+  <div class="module-content" id="mod-tracker-sim">
+    <div class="module-title">Purple Tracker Simulator</div>
+    <div class="module-subtitle">Practice updating the tracker by working a patient from Stage 0 to attachment</div>
+
+    <div id="tracker-sim">
+      <div class="sim-header">
+        <div class="sim-dot active"></div>
+        🟣 PSS Purple Tracker — Live Simulation
+      </div>
+      <div class="sim-body">
+        <div class="sim-patient">
+          <div class="sim-patient-icon">👤</div>
+          <div>
+            <div class="sim-patient-name">Maria Santos</div>
+            <div class="sim-patient-meta">DOB: 1978-03-14 · Postal: M4J 2A1 · Language: Portuguese · HCC Referral</div>
+          </div>
+        </div>
+        <div class="sim-current">
+          <div class="sim-status-label">Current Status</div>
+          <div class="sim-status-badge" id="sim-status">Chart Made (Stage 0)</div>
+        </div>
+        <div class="sim-status-label" style="margin-bottom:8px">What action do you take next?</div>
+        <div class="sim-actions" id="sim-actions"></div>
+        <div class="sim-log">
+          <div class="sim-log-title">Audit Trail</div>
+          <div id="sim-log-entries">
+            <div class="sim-log-entry"><span class="sim-log-time">Day 0</span><span>Chart created in PSS. Purple Tracker inserted. Source: HCC List.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="complete-btn" onclick="completeModule('tracker-sim')">✓ Mark Complete</button>
+  </div>
+
+  <!-- ══ SCENARIOS ══ -->
+  <div class="module-content" id="mod-scenarios">
+    <div class="module-title">Scenario Exercises</div>
+    <div class="module-subtitle">Real-world situations — what would you do? Think before selecting.</div>
+
+    <!-- Scenario 1 -->
+    <div class="scenario-box">
+      <span class="scenario-badge">SCENARIO 1</span>
+      <div class="scenario-text">A walk-in patient arrives at the Flemingdon site. She is 7 months pregnant, speaks very little English, and has been having headaches. She has never been to FHC before and has no family doctor. What is her triage code and what do you do first?</div>
+      <div class="scenario-choices btn-group" style="margin-top:16px">
+        <button class="btn" onclick="scenarioAnswer(1,'a')">A: Green — give her a number to call back</button>
+        <button class="btn" onclick="scenarioAnswer(1,'b')">B: Red — book promptly with MD, arrange interpreter now</button>
+        <button class="btn" onclick="scenarioAnswer(1,'c')">C: Yellow — book M&G next week</button>
+      </div>
+      <div class="scenario-result" id="s1-result"></div>
+    </div>
+
+    <!-- Scenario 2 -->
+    <div class="scenario-box">
+      <span class="scenario-badge">SCENARIO 2</span>
+      <div class="scenario-text">You call a patient from the HCC list. They say they already found a family doctor last week. How do you update the Purple Tracker?</div>
+      <div class="scenario-choices btn-group" style="margin-top:16px">
+        <button class="btn" onclick="scenarioAnswer(2,'a')">A: Stage 1: Initiated — Forms sent</button>
+        <button class="btn" onclick="scenarioAnswer(2,'b')">B: Complete (Already Attached)</button>
+        <button class="btn" onclick="scenarioAnswer(2,'c')">C: Declined</button>
+        <button class="btn" onclick="scenarioAnswer(2,'d')">D: Delete the chart — no longer needed</button>
+      </div>
+      <div class="scenario-result" id="s2-result"></div>
+    </div>
+
+    <!-- Scenario 3 -->
+    <div class="scenario-box">
+      <span class="scenario-badge">SCENARIO 3</span>
+      <div class="scenario-text">You've been trying to reach a patient for 2 weeks with no response — 4 voicemails left. The patient's tracker status hasn't been updated in 10 days. What do you do?</div>
+      <div class="scenario-choices btn-group" style="margin-top:16px">
+        <button class="btn" onclick="scenarioAnswer(3,'a')">A: Keep trying — don't change the status yet</button>
+        <button class="btn" onclick="scenarioAnswer(3,'b')">B: Update to "Unable to Be Reached" — document attempts, close for now</button>
+        <button class="btn" onclick="scenarioAnswer(3,'c')">C: Delete the chart and start fresh</button>
+      </div>
+      <div class="scenario-result" id="s3-result"></div>
+    </div>
+
+    <!-- Scenario 4 -->
+    <div class="scenario-box">
+      <span class="scenario-badge">SCENARIO 4</span>
+      <div class="scenario-text">A patient calls and says they received an email referral to FHC but there's no chart created yet. Your Medical Secretary is at lunch. What do you do?</div>
+      <div class="scenario-choices btn-group" style="margin-top:16px">
+        <button class="btn" onclick="scenarioAnswer(4,'a')">A: Ask the patient to call back when the secretary returns</button>
+        <button class="btn" onclick="scenarioAnswer(4,'b')">B: Take the patient's information and log it somewhere safe for now</button>
+        <button class="btn" onclick="scenarioAnswer(4,'c')">C: Create a mini chart yourself if able to, log it in PSS — or immediately message the secretary to action it. No referral left behind.</button>
+      </div>
+      <div class="scenario-result" id="s4-result"></div>
+    </div>
+
+    <button class="complete-btn" onclick="completeModule('scenarios')">✓ Scenarios Complete</button>
+  </div>
+
+  <!-- ══ QUIZ ══ -->
+  <div class="module-content" id="mod-quiz">
+    <div class="module-title">Knowledge Check</div>
+    <div class="module-subtitle">10 questions to test your understanding. Think before you click.</div>
+
+    <div id="quiz-questions">
+      <!-- Questions are rendered by JS -->
+    </div>
+    <div class="quiz-score" id="quiz-score">
+      <div class="big-score" id="score-num">0/10</div>
+      <div class="score-label" id="score-msg"></div>
+      <button class="btn btn-primary" style="margin-top:24px" onclick="retakeQuiz()">Retake Quiz</button>
+    </div>
+    <button class="btn btn-primary" id="quiz-submit" onclick="submitQuiz()" style="margin-top:20px;display:none">Submit Answers →</button>
+    <button class="complete-btn" id="quiz-complete" onclick="completeModule('quiz')" style="display:none">🎉 Training Complete!</button>
+  </div>
+
+</main>
+
+<script>
+// ── MODULE STATE ──
+const moduleOrder = ['welcome','why','system','journey','workflow','roles','triage','tracker','statuses','hcc','insurance','faq','triage-tool','tracker-sim','scenarios','quiz'];
+const completed = new Set();
+let currentModule = 'welcome';
+const moduleNames = {
+  welcome:'Welcome', why:'Why This Matters', system:'5-Component System',
+  journey:'Patient Journey', workflow:'Intake Workflow', roles:'Roles & Responsibilities',
+  triage:'Triage Codes', tracker:'The Purple Tracker', statuses:'All 17 Statuses',
+  hcc:'HCC & Call Scripts', insurance:'Insurance Status', faq:'FAQs',
+  'triage-tool':'Triage Decision Tool','tracker-sim':'Tracker Simulator',
+  scenarios:'Scenario Exercises', quiz:'Knowledge Check'
+};
+
+function showModule(id, link) {
+  document.querySelectorAll('.module-content').forEach(m => m.classList.remove('active'));
+  document.getElementById('mod-'+id).classList.add('active');
+  document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+  const target = link || document.querySelector(`[data-module="${id}"]`);
+  if (target) target.classList.add('active');
+  document.getElementById('topbar-title').textContent = moduleNames[id] || id;
+  document.getElementById('breadcrumb').textContent = 'FHC Intake Training';
+  currentModule = id;
+  if (id === 'quiz') initQuiz();
+  if (id === 'tracker-sim') initTrackerSim();
+  window.scrollTo(0,0);
+}
+
+function nextModule() {
+  const idx = moduleOrder.indexOf(currentModule);
+  if (idx < moduleOrder.length - 1) {
+    const next = moduleOrder[idx+1];
+    showModule(next, null);
+    document.querySelector(`[data-module="${next}"]`)?.classList.add('active');
+  }
+}
+
+function completeModule(id) {
+  completed.add(id);
+  const link = document.querySelector(`[data-module="${id}"]`);
+  if (link) { link.classList.add('done'); }
+  updateProgress();
+  nextModule();
+}
+
+function updateProgress() {
+  const pct = Math.round((completed.size / moduleOrder.length) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = pct + '%';
+}
+
+// ── TRIAGE TOOL ──
+let triageState = { urgent: null, complexFactors: new Set() };
+
+function triageSelect(q, val) {
+  triageState.urgent = val;
+  document.querySelectorAll('#mod-triage-tool .btn-group:first-of-type .btn').forEach(b => b.classList.remove('selected'));
+  event.target.classList.add('selected');
+  if (val === 'yes') {
+    showTriageResult('red');
+  } else {
+    document.getElementById('triage-q2').style.display = 'block';
+  }
+}
+
+function toggleComplex(btn, factor) {
+  if (factor === 'none') {
+    triageState.complexFactors.clear();
+    document.querySelectorAll('#complexity-btns .btn').forEach(b => b.classList.remove('selected'));
+  } else {
+    if (triageState.complexFactors.has(factor)) {
+      triageState.complexFactors.delete(factor);
+      btn.classList.remove('selected');
+    } else {
+      triageState.complexFactors.add(factor);
+      btn.classList.add('selected');
+    }
+  }
+}
+
+function calcTriage() {
+  if (triageState.complexFactors.size > 0) {
+    showTriageResult('yellow');
+  } else {
+    showTriageResult('green');
+  }
+}
+
+function showTriageResult(color) {
+  document.querySelectorAll('.triage-result').forEach(r => r.classList.remove('show', 'result-red','result-yellow','result-green'));
+  const el = document.getElementById('triage-result-'+color);
+  el.className = `triage-result result-${color} show`;
+}
+
+function resetTriage() {
+  triageState = { urgent: null, complexFactors: new Set() };
+  document.querySelectorAll('#mod-triage-tool .btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('triage-q2').style.display = 'none';
+  document.querySelectorAll('.triage-result').forEach(r => r.classList.remove('show'));
+}
+
+// ── TRACKER SIMULATOR ──
+const simStages = [
+  { status: 'Chart Made (Stage 0)', actions: [
+    { label: 'Call patient for first touchpoint', next: 'Stage 1: Initiated — Forms sent', log: 'HINC called patient. First touchpoint made. Intake forms sent via OCEAN secure email.' },
+  ]},
+  { status: 'Stage 1: Initiated — Forms sent', actions: [
+    { label: 'Patient needs help completing forms (language barrier)', next: 'HINC Attached — Assisted Intake', log: 'Language barrier identified. HINC actively assisted patient in completing all intake forms.' },
+    { label: 'Patient completed forms independently', next: 'HINC Attached — Forms Done', log: 'All paperwork confirmed complete. Patient awaiting booking.' },
+  ]},
+  { status: 'HINC Attached — Forms Done', actions: [
+    { label: 'Book Access Clinic (Red/Yellow urgency)', next: 'Booked (but not seen)', log: 'Appointment booked at Access Clinic. Interpreter arranged for 45-min slot.' },
+  ]},
+  { status: 'Booked (but not seen)', actions: [
+    { label: 'Patient attended Access Clinic visit', next: 'Stage 2: Seen AC 1–2 Times', log: 'Patient attended first Access Clinic visit. Clinical stabilization initiated.' },
+    { label: 'Patient did not show up', next: 'No Show', log: 'Patient did not attend booked appointment and did not cancel. Rebooked required.' },
+  ]},
+  { status: 'Stage 2: Seen AC 1–2 Times', actions: [
+    { label: 'Book Meet & Greet with permanent provider', next: 'Stage 3: M&G Booked (Complete)', log: '🎉 Meet & Greet with Family Physician booked. Patient formally rostered. ATTACHMENT COMPLETE.' },
+  ]},
+  { status: 'Stage 3: M&G Booked (Complete)', actions: [] }
+];
+
+let simStep = 0;
+let simDay = 0;
+
+function initTrackerSim() {
+  simStep = 0; simDay = 0;
+  updateSimDisplay();
+  document.getElementById('sim-log-entries').innerHTML = '<div class="sim-log-entry"><span class="sim-log-time">Day 0</span><span>Chart created in PSS. Purple Tracker inserted. Source: HCC List.</span></div>';
+}
+
+function updateSimDisplay() {
+  const stage = simStages[simStep];
+  document.getElementById('sim-status').textContent = stage.status;
+  const actionsEl = document.getElementById('sim-actions');
+  actionsEl.innerHTML = '';
+  if (stage.actions.length === 0) {
+    actionsEl.innerHTML = '<div style="padding:12px;background:var(--green-pale);border-radius:8px;color:var(--green);font-weight:700;font-size:14px">🎉 Patient successfully attached to primary care! Excellent work.</div>';
+    return;
+  }
+  stage.actions.forEach((action, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'sim-action-btn';
+    btn.textContent = action.label;
+    btn.onclick = () => simAction(i);
+    actionsEl.appendChild(btn);
+  });
+}
+
+function simAction(actionIdx) {
+  const action = simStages[simStep].actions[actionIdx];
+  simDay += Math.floor(Math.random() * 3) + 1;
+  const log = document.getElementById('sim-log-entries');
+  const entry = document.createElement('div');
+  entry.className = 'sim-log-entry';
+  entry.innerHTML = `<span class="sim-log-time">Day ${simDay}</span><span>${action.log}</span>`;
+  log.appendChild(entry);
+  simStep = simStages.findIndex(s => s.status === action.next);
+  if (simStep === -1) simStep = simStages.length - 1;
+  updateSimDisplay();
+}
+
+// ── SCENARIOS ──
+const scenarioAnswers = {
+  1: { correct: 'b', feedback: {
+    a: { type:'bad', msg:'❌ Incorrect. A pregnant patient with headaches and a language barrier is RED — she needs urgent attention. Give her a contact number alone is insufficient.' },
+    b: { type:'good', msg:'✅ Correct! Pregnancy + headaches + language barrier = RED. Book urgently with MD and arrange an interpreter for a 45-min appointment.' },
+    c: { type:'bad', msg:'❌ Close, but not quite. This patient\'s combination of pregnancy + active symptoms (headaches) = RED, not Yellow. Arrange immediate care.' }
+  }},
+  2: { correct: 'b', feedback: {
+    a: { type:'bad', msg:'❌ No — "Initiated" is for when you\'ve started the intake process. This patient already has a doctor and doesn\'t need attachment.' },
+    b: { type:'good', msg:'✅ Correct! "Complete (Already Attached)" is the right status. This closes the case cleanly and documents they didn\'t need attachment.' },
+    c: { type:'bad', msg:'❌ "Declined" means the patient refused services. This patient found a doctor — that\'s a positive outcome, not a refusal.' },
+    d: { type:'bad', msg:'❌ Never delete charts. The audit trail is critical for funder reporting. Use the correct end-state status.' }
+  }},
+  3: { correct: 'b', feedback: {
+    a: { type:'bad', msg:'❌ The status is already 10 days stale — automated alerts have triggered. Keeping an unchanged status is exactly what the 7-day rule prevents.' },
+    b: { type:'good', msg:'✅ Correct! "Unable to Be Reached" closes the case for now. Document all 4 attempts. The case can be reopened when the patient calls back.' },
+    c: { type:'bad', msg:'❌ Never delete charts. The Purple Tracker audit trail is required for HCC and OHT reporting.' }
+  }},
+  4: { correct: 'c', feedback: {
+    a: { type:'bad', msg:'❌ "No Referral Left Behind" means we don\'t wait. The patient is here now. A delay could result in a lost referral.' },
+    b: { type:'ok', msg:'⚠️ Partially right — taking info is good, but storing it "somewhere safe" outside PSS is not acceptable. All data must be in the EMR.' },
+    c: { type:'good', msg:'✅ Correct! No Referral Left Behind. Create the chart if you can, or message the secretary immediately. Don\'t let the patient slip through.' }
+  }}
+};
+
+function scenarioAnswer(num, choice) {
+  const ans = scenarioAnswers[num];
+  const fb = ans.feedback[choice];
+  const resEl = document.getElementById('s'+num+'-result');
+  resEl.className = `scenario-result show ${fb.type}`;
+  resEl.textContent = fb.msg;
+  document.querySelectorAll(`#mod-scenarios .scenario-box:nth-of-type(${num}) .btn`).forEach(b => b.disabled = true);
+  if (choice === ans.correct) {
+    document.querySelectorAll(`#mod-scenarios .scenario-box:nth-of-type(${num}) .btn`)[Object.keys(ans.feedback).indexOf(choice)].style.background = 'var(--green-pale)';
+  }
+}
+
+// ── QUIZ ──
+const questions = [
+  { q: 'What is the provincial target for FHC patient attachments by July 31, 2026?', options: ['2,000 new clients','6,000 new clients','10,000 new clients','4,500 new clients'], correct: 1 },
+  { q: 'Which PSS keyboard shortcut opens a patient chart quickly?', options: ['Ctrl + P','Ctrl + ]','Alt + C','F5'], correct: 1 },
+  { q: 'A patient had a recent hospital discharge and has multiple chronic conditions. What triage code should they receive?', options: ['Green — standard','Red — urgent','Yellow — Meet & Greet','No triage needed'], correct: 2 },
+  { q: 'A status that hasn\'t been updated for how many days triggers an automated alert?', options: ['3 days','14 days','7 days','30 days'], correct: 2 },
+  { q: 'What is the maximum time from form submission to first patient contact?', options: ['5 days','10 days','2 weeks','Same day'], correct: 1 },
+  { q: 'A patient explicitly refuses services and does NOT have a family doctor. Which status do you use?', options: ['Complete (Already Attached)','Unable to Be Reached','Declined','No Show'], correct: 2 },
+  { q: 'Where MUST all HCC list data be recorded?', options: ['In an Excel spreadsheet on SharePoint','In the EMR (PSS) only','In Teams and PSS','In a paper log and PSS'], correct: 1 },
+  { q: 'For a Red triage appointment with an interpreter, how long should it be scheduled?', options: ['30 minutes','45 minutes','60 minutes','20 minutes'], correct: 1 },
+  { q: 'What is the full name of the Purple Tracker form in PSS?', options: ['"FHC – Intake Request – New Client"','"TNO – Attachment – Tracking"','"FHC – Consultation Request – FHC TNO Intake – New"','"HCC – Patient Log – 2026"'], correct: 2 },
+  { q: 'A patient completes the OCEAN form and their chart is created. What is their stage and first Purple Tracker status?', options: ['Stage 1 — HINC Initiated','Stage 0 — Chart Made','Stage 0 — Booked','Stage 1 — Forms Sent'], correct: 1 },
+];
+
+let quizAnswers = {};
+let quizStarted = false;
+
+function initQuiz() {
+  if (quizStarted) return;
+  quizStarted = true;
+  quizAnswers = {};
+  const container = document.getElementById('quiz-questions');
+  container.innerHTML = '';
+  questions.forEach((q, qi) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-question';
+    div.innerHTML = `
+      <div class="quiz-q-num">Question ${qi+1} of ${questions.length}</div>
+      <div class="quiz-q-text">${q.q}</div>
+      ${q.options.map((opt, oi) => `<button class="quiz-option" id="q${qi}-o${oi}" onclick="selectAnswer(${qi}, ${oi})">${opt}</button>`).join('')}
+      <div class="quiz-feedback" id="q${qi}-fb"></div>
+    `;
+    container.appendChild(div);
+  });
+  document.getElementById('quiz-submit').style.display = 'inline-flex';
+  document.getElementById('quiz-score').classList.remove('show');
+  document.getElementById('quiz-complete').style.display = 'none';
+}
+
+function selectAnswer(qi, oi) {
+  // deselect others
+  questions[qi].options.forEach((_, i) => {
+    const btn = document.getElementById(`q${qi}-o${i}`);
+    btn.classList.remove('selected');
+  });
+  document.getElementById(`q${qi}-o${oi}`).classList.add('selected');
+  quizAnswers[qi] = oi;
+}
+
+function submitQuiz() {
+  let score = 0;
+  questions.forEach((q, qi) => {
+    const chosen = quizAnswers[qi];
+    q.options.forEach((_, oi) => {
+      const btn = document.getElementById(`q${qi}-o${oi}`);
+      btn.disabled = true;
+      if (oi === q.correct) btn.classList.add('correct');
+    });
+    const fb = document.getElementById(`q${qi}-fb`);
+    if (chosen === q.correct) {
+      score++;
+      document.getElementById(`q${qi}-o${chosen}`)?.classList.add('correct');
+      fb.textContent = '✅ Correct!';
+      fb.className = 'quiz-feedback correct show';
+    } else {
+      if (chosen !== undefined) document.getElementById(`q${qi}-o${chosen}`)?.classList.add('incorrect');
+      fb.textContent = `❌ Correct answer: ${q.options[q.correct]}`;
+      fb.className = 'quiz-feedback incorrect show';
+    }
+  });
+  document.getElementById('quiz-submit').style.display = 'none';
+  const scoreEl = document.getElementById('quiz-score');
+  scoreEl.classList.add('show');
+  document.getElementById('score-num').textContent = `${score}/${questions.length}`;
+  const pct = (score/questions.length)*100;
+  let msg = pct === 100 ? '🌟 Perfect score! You\'re ready to lead intake calls.' :
+            pct >= 80 ? '👏 Strong result! Review any incorrect answers above.' :
+            pct >= 60 ? '📚 Good effort. Review the modules for any gaps before going live.' :
+            '🔄 Keep studying! Re-read the core modules and try again.';
+  document.getElementById('score-msg').textContent = msg;
+  if (pct >= 70) document.getElementById('quiz-complete').style.display = 'inline-flex';
+}
+
+function retakeQuiz() {
+  quizStarted = false;
+  quizAnswers = {};
+  document.getElementById('quiz-score').classList.remove('show');
+  document.getElementById('quiz-complete').style.display = 'none';
+  initQuiz();
+}
+
+// Init
+initQuiz();
+updateProgress();
+</script>
+</body>
+</html>
